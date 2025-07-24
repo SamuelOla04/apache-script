@@ -1,0 +1,22 @@
+name: Apache Setup CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Make script executable
+      run: chmod +x setup.sh
+
+    - name: Run Apache setup script
+      run: sudo ./setup.sh
+
