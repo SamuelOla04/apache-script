@@ -1,62 +1,41 @@
 name: Apache CI/CD Pipeline
-# This is the name of the workflow shown in GitHub Actions UI
 
 on:
   push:
     branches: [ main ]
-    # Run workflow whenever you push code to the 'main' branch
   pull_request:
     branches: [ main ]
-    # Run workflow on pull requests targeting the 'main' branch
 
 jobs:
   ci:
     runs-on: ubuntu-latest
-    # Use the latest Ubuntu virtual machine to run the job
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        # Pulls your repository code so the workflow can access it
 
       - name: Make script executable
         run: chmod +x setup.sh
-        # Changes permissions so the script can be run as a program
 
       - name: Run Apache setup script
         run: sudo ./setup.sh
-        # Executes your setup.sh script to install/start Apache
 
   cd:
     needs: ci
-    # This job runs only if the 'ci' job finishes successfully
-
     runs-on: ubuntu-latest
-    # Also runs on a fresh Ubuntu virtual machine
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        # Again, pulls your repo code for this job
 
       - name: Deploy to remote server via SSH
         uses: appleboy/ssh-action@v0.1.7
-        # Uses a community action to SSH into your server
-
         with:
           host: ${{ secrets.REMOTE_HOST }}
-          # The IP/domain of your remote server (stored securely)
-
           username: ${{ secrets.REMOTE_USER }}
-          # SSH username for connecting to the remote server
-
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # Your private SSH key (stored securely as a GitHub secret)
-
           script: |
+            cd /home/your-username/your-project-folder
             chmod +x setup.sh
-            # Make sure the script is executable on remote
-
-            ./setup.sh
-            # Run the setup script on your remote server
+            sudo ./setup.sh
 
